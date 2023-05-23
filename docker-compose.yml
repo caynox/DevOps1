@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  webserver:
+    image: nginx:latest
+    ports:
+      - 80:80
+
+  checker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./server-check.log:/app/server-check.log  # Map the log file to the host
+    depends_on:
+      - webserver
+    command: >
+      bash -c "apt-get update &&
+               apt-get -y install curl &&
+               while true; do /app/check.sh; sleep 30; done"
